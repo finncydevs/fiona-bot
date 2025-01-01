@@ -4,7 +4,8 @@ const fs = require('fs');
 const path = require('path');
 const { default: makeWASocket, useMultiFileAuthState, DisconnectReason } = require('@whiskeysockets/baileys');
 const P = require('pino');
-const e = require ('./keep.js');
+const e = require ('./commands/keep.js');
+const qrcode = require('qrcode-terminal');
 
 // Global settings
 global.packname = settings.packname;
@@ -51,6 +52,9 @@ const { lyricsCommand } = require('./commands/lyrics');
 const { dareCommand } = require('./commands/dare');
 const { truthCommand } = require('./commands/truth');
 const { clearCommand } = require('./commands/clear');
+// const { searchAnimeByPhoto } = require('./commands/anime'); 
+const  freeGamesCommand  = require('./commands/freegames.js');
+require('./commands/keep.js');
 
 // Data storage path
 const dataDirectory = path.join(__dirname, './data');
@@ -376,6 +380,12 @@ async function startBot() {
                 break;
             case userMessage === '.anime':
                 await searchAnimeByPhoto(sock, chatId, message, settings.sauceNaoApiKey);
+                break;
+            case userMessage === '.freegames':
+                await freeGamesCommand(sock, chatId);
+                break;
+            case userMessage === '.ping':
+                await sock.sendMessage(chatId, { text: 'Pong!' });
                 break;
 
 

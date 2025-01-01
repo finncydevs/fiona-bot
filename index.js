@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const { default: makeWASocket, useMultiFileAuthState, DisconnectReason } = require('@whiskeysockets/baileys');
 const P = require('pino');
+const e = require ('./keep.js');
 
 // Global settings
 global.packname = settings.packname;

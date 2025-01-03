@@ -1,4 +1,4 @@
-async function searchAnimeByPhoto(sock, chatId, message, apiKey) {
+async function searchCommand(sock, chatId, message, apiKey) {
     const fileMessage = message.message?.imageMessage || message.message?.videoMessage;
     const buffer = await sock.downloadMediaMessage(message);
 

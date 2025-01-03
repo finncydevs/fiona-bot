@@ -1,12 +1,12 @@
-const settings = require('../settings');
-const fs = require('fs');
+const settings = require("../settings");
+const fs = require("fs");
 
 async function helpCommand(sock, chatId, channelLink) {
-    const helpMessage = `
+  const helpMessage = `
 ╔═══════════════════╗
-   *🤖 ${settings.botName || 'WhatsApp Bot'}*  
-   Version: *${settings.version || '1.0.0'}*
-   by ${settings.botOwner || 'Unknown Owner'}
+   *🤖 ${settings.botName || "WhatsApp Bot"}*  
+   Version: *${settings.version || "1.0.0"}*
+   by ${settings.botOwner || "Unknown Owner"}
 ╚═══════════════════╝
 
 *Available Commands:*
@@ -25,7 +25,7 @@ async function helpCommand(sock, chatId, channelLink) {
 ║ ➤ .meme
 ║ ➤ .simage
 ║ ➤ .attp <text>
-║ ➤ .lyrics <song_title>
+║ ➤ .lyrics "<artis>" "<song_title>"
 ║ ➤ .8ball <question>
 ╚═══════════════════╝
 
@@ -74,24 +74,25 @@ async function helpCommand(sock, chatId, channelLink) {
 ╚═══════════════════╝
 
 
-@${settings.botName || 'FionaBot'} 2024 v${settings.version || '1.0.0'}
+@${settings.botName || "FionaBot"} 2024 v${settings.version || "1.0.0"}
 `;
 
-    try {
-        const imagePath = './assets/fiona.jpg';
-        if (fs.existsSync(imagePath)) {
-            const imageBuffer = fs.readFileSync(imagePath);
-            await sock.sendMessage(chatId, { 
-                image: imageBuffer, 
-                caption: helpMessage 
-            });
-        } else {
-            await sock.sendMessage(chatId, { text: helpMessage });
-        }
-
-    } catch (error) {
-        await sock.sendMessage(chatId, { text: 'An error occurred while sending the help message.' });
+  try {
+    const imagePath = "./assets/fiona.jpg";
+    if (fs.existsSync(imagePath)) {
+      const imageBuffer = fs.readFileSync(imagePath);
+      await sock.sendMessage(chatId, {
+        image: imageBuffer,
+        caption: helpMessage,
+      });
+    } else {
+      await sock.sendMessage(chatId, { text: helpMessage });
     }
+  } catch (error) {
+    await sock.sendMessage(chatId, {
+      text: "An error occurred while sending the help message.",
+    });
+  }
 }
 
 module.exports = helpCommand;

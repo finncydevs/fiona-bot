@@ -62,7 +62,9 @@ const { clearCommand } = require("./commands/clear");
 const searchCommand = require("./commands/anime");
 const freeGamesCommand = require("./commands/freegames");
 const { nhenCommand } = require("./commands/nhen");
-const { searchCode } = require("./commands/ncode");
+const { nhenSearch } = require("./commands/ncode");
+const youtubeCommand = require("./commands/youtube");
+const { getRandomImage } = require("./commands/google");
 require("./commands/keep.js");
 
 // Data storage path
@@ -94,7 +96,7 @@ function saveUserGroupData() {
 
 // Function to send a global broadcast message
 const globalBroadcastMessage =
-  "🌟 This is a global broadcast message from KnightBot! Stay tuned for updates.";
+  "🌟 This is a global broadcast message from fionabot! Stay tuned for updates.";
 
 async function sendGlobalBroadcastMessage(sock) {
   if (userGroupData.groups.length === 0 && userGroupData.users.length === 0)
@@ -292,12 +294,7 @@ async function startBot() {
         await helpCommand(sock, chatId, global.channelLink);
         break;
       case userMessage.startsWith(".sticker") || userMessage.startsWith(".s"):
-        const media = userMessage.downloadMedia();
-        await sock.sendMessage(chatId.from, media, {
-          sendMediaAsSticker: true,
-          stickerAuthor: global.author,
-          stickerPack: global.packname,
-        });
+        await stickerCommand(sock, chatId, message);
         break;
       case userMessage.startsWith(".warnings"):
         const mentionedJidListWarnings =
@@ -506,20 +503,35 @@ async function startBot() {
           },
         });
         break;
-      case userMessage === ".nhen":
-        const code = Math.floor(100000 + Math.random() * 999999);
+
+      case userMessage.startsWith(".nhen"):
+        let code = userMessage.split(" ").slice(1).join(" ").trim();
+        if (!code) {
+          code = Math.floor(100000 + Math.random() * 999999);
+        }
         await nhenCommand(sock, chatId, code);
         break;
-      case userMessage === ".ncode":
-        const code2 = userMessage.split(" ").slice(1).join(" ").trim();
+      case userMessage.startsWith(".nsearch"):
+        const search = userMessage.split(" ").slice(1).join(" ").trim();
+        console.log(search);
+        await nhenSearch(sock, chatId, search);
+        break;
+      case userMessage.startsWith(".yt") || userMessage.startsWith(".youtube"):
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        const urls = userMessage.match(urlRegex);
+        console.log(urls);
+        await youtubeCommand(sock, chatId, urls);
+        break;
+      case userMessage.startsWith(".jomok") || userMessage.startsWith("!jomok"):
+        const query = "meme jomok";
+        await getRandomImage(sock, chatId, query);
+        console.log(query);
+        break;
 
-        if (code2.length === 6 && !isNaN(code2)) {
-          await searchCode(sock, chatId, code2);
-        } else {
-          await sock.sendMessage(chatId, {
-            text: "Coba lagi masukan kode 6 huruf.",
-          });
-        }
+      case userMessage.startsWith("!ping"):
+        await sock.sendMessage(chatId, {
+          text: "Pong!",
+        });
         break;
 
       default:

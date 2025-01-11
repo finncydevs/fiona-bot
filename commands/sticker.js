@@ -14,14 +14,12 @@ async function stickerCommand(sock, chatId, message) {
     const msg = message.message || {};
     mediaMessage = msg.imageMessage || msg.videoMessage;
 
-    // Additional fallback: Check if the message contains a quoted media in the context
     if (!mediaMessage && msg.extendedTextMessage?.contextInfo?.quotedMessage) {
       const quotedMsg = msg.extendedTextMessage.contextInfo.quotedMessage;
       mediaMessage = quotedMsg.imageMessage || quotedMsg.videoMessage;
     }
   }
 
-  // If no media is found, send a message back to the user
   if (!mediaMessage) {
     await sock.sendMessage(chatId, {
       text: "Tidak ditemukan media. Harap kirim gambar/video dengan caption atau balas media yang valid.",
@@ -30,7 +28,6 @@ async function stickerCommand(sock, chatId, message) {
   }
 
   try {
-    // Download the media
     const mediaBuffer = await downloadMediaMessage(
       message,
       "buffer",
@@ -38,18 +35,14 @@ async function stickerCommand(sock, chatId, message) {
       { logger: undefined, reuploadRequest: sock.updateMediaMessage }
     );
 
-    // If the media fails to download
     if (!mediaBuffer) {
       throw new Error("Failed to download the media.");
     }
 
-    // Convert the media to a WebP sticker
     const stickerBuffer = await sharp(mediaBuffer)
-      .resize(512, 512, { fit: "cover" }) // Ensure the sticker is square and resized
       .webp() // Convert to WebP format
       .toBuffer();
 
-    // Send the sticker
     await sock.sendMessage(chatId, {
       sticker: stickerBuffer,
       mimetype: "image/webp",
@@ -57,10 +50,9 @@ async function stickerCommand(sock, chatId, message) {
       author: settings.author || "My Author",
     });
   } catch (error) {
-    // Handle errors during media processing or sending
     console.error("Error creating sticker:", error.message);
     await sock.sendMessage(chatId, {
-      text: `Terjadi kesalahan saat membuat stiker: ${error.message}`,
+      text: "Terjadi kesalahan saat membuat stiker: ${error.message}",
     });
   }
 }

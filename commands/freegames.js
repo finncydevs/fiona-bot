@@ -17,11 +17,10 @@ async function fetchEpicFreeGames() {
 
 async function freeGamesCommand(sock, chatId) {
   const freeGames = await fetchEpicFreeGames();
-
   if (freeGames.length > 0) {
     let message = " *🕹️ Epic Free Games Available:*\n\n";
     freeGames.forEach((game) => {
-      message += `*${game.title}*\nDescription: *${game.description}*\nLink: ${game.offerLink}\n`;
+      message += `*${game.title}*\nDescription: *${game.description}*\nLink: ${game.offerLink}\n *Active:* ${game.effectiveDate}\n *Ends:* ${game.expiryDate}\n`;
     });
     await sock.sendMessage(chatId, { text: message });
   } else {

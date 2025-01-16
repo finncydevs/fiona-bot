@@ -25,7 +25,7 @@ async function nhenCommand(sock, chatId, code) {
   } catch (error) {
     console.error(error);
     await sock.sendMessage(chatId, {
-      text: "Gagal menemukan doujin! Pastikan kodenya benar atau coba lagi nanti.",
+      text: "Failed to search the doujin.",
     });
   }
 }

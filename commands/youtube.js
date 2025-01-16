@@ -1,43 +1,67 @@
 const ytdlp = require("ytdlp-nodejs");
-const { createWriteStream } = require("fs");
-const { error } = require("console");
-const file = createWriteStream("./temp/video.mp4");
+const fs = require("fs");
+const path = require("path");
 
-async function youtubeCommand(sock, chatId, urls) {
-  if (!urls) {
+async function youtubeCommand(sock, chatId, url) {
+  if (!url) {
     await sock.sendMessage(chatId, {
       text: "Masukkan URL video YouTube yang ingin diunduh.",
     });
     return;
   }
-  try {
-    const stream = ytdlp
-      .stream(urls, {
-        filter: "audioandvideo",
-        quality: "highest",
-      })
-      .on("error", (error) => {
-        console.error(error);
-      })
-      .pipe(file);
 
-    ytdlp
-      .download(urls, {
-        filter: "mergevideo",
-        quality: "highest",
-        output: file,
-        outdir: "./temp",
-      })
-      .on("progress", (chunkLength, downloaded, total) => {
-        const percent = downloaded / total;
-        console.log("Downloaded: ", percent);
-      });
-    const video = fs.readFileSync("./temp/video.mp4");
-    await sock.sendMessage(chatId, {
-      video: video,
-      caption: "Berhasil mengunduh video!",
+  const tempDir = path.join(__dirname, "..", "temp"); // One level outside the current folder
+  const outputPath = path.join(tempDir, "video.mp4");
+
+  try {
+    // Ensure the temp folder exists
+    if (!fs.existsSync(tempDir)) {
+      fs.mkdirSync(tempDir, { recursive: true });
+    }
+
+    console.log("Starting download...");
+    const downloader = ytdlp.download(url, {
+      filter: "audioandvideo",
+      quality: "highest",
+      outdir: tempDir,
+      output: "video.mp4",
     });
-    fs.unlinkSync(file);
-  } catch (error) {}
+
+    downloader
+      .on("progress", (chunkLength, downloaded, total) => {
+        const percent = (downloaded / total) * 100;
+        console.log(`Downloaded: ${percent.toFixed(2)}%`);
+      })
+      .on("end", () => {
+        console.log("Download completed successfully!");
+      })
+      .on("error", (err) => {
+        console.error("Download error:", err);
+      });
+    console.log(tempDir);
+    await downloader;
+
+    // Check if the file exists
+    if (!fs.existsSync(outputPath)) {
+      throw new Error(`File not found at ${outputPath}`);
+    }
+
+    // Read and send the file
+    const video = fs.readFileSync(outputPath);
+    await sock.sendMessage(chatId, {
+      video,
+      caption: "Succes downloaded the video",
+    });
+
+    // Clean up the file
+    fs.unlinkSync(outputPath);
+    console.log("File sent and removed.");
+  } catch (error) {
+    console.error("Error during download or sending:", error);
+    await sock.sendMessage(chatId, {
+      text: "Error occured. try again later.",
+    });
+  }
 }
+
 module.exports = youtubeCommand;

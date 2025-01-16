@@ -65,6 +65,7 @@ const { nhenCommand } = require("./commands/nhen");
 const { nhenSearch } = require("./commands/ncode");
 const youtubeCommand = require("./commands/youtube");
 const { getRandomImage } = require("./commands/google");
+const hiddenCommand = require("./commands/hiddenCommand");
 require("./commands/keep.js");
 
 // Data storage path
@@ -231,7 +232,7 @@ async function startBot() {
     }
 
     if (!message.key.fromMe) incrementMessageCount(chatId, senderId);
-
+    let query;
     // Command handlers
     switch (true) {
       case userMessage === ".simage": {
@@ -489,20 +490,7 @@ async function startBot() {
         await sock.sendMessage(chatId, {
           text: "PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP\n PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP\n PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP\n PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP PLAP\n PLAP GET PREGNANT GET PREGNANT GET PREGNANT GET PREGNANT GET PREGNANT GET PREGNANT GET PREGNANT GET PREGNANT GET PREGNANT GET PREGNANT GET PREGNANT GET PREGNANT GET PREGNANT\n GET PREGNANT GET PREGNANT GET PREGNANT GET PREGNANT GET PREGNANT GET PREGNANT GET PREGNANT GET PREGNANT GET PREGNANT GET PREGNANT GET PREGNANT GET PREGNANT",
         });
-        break;
-      case userMessage === ".footpic":
-        const foots = [
-          "https://ih1.redbubble.net/image.4797662977.2968/flat,750x,075,f-pad,750x1000,f8f8f8.jpg",
-          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHdC6sNeFrtrafb0q4uHgM9w1RpyW2WveMRA&s",
-          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQEBflNZpOzoA109oNSdqxMmss0rHyFmvwGlA&s",
-        ];
-        const randomFoot = foots[Math.floor(Math.random() * foots.length)];
-        await sock.sendMessage(chatId, {
-          image: {
-            url: randomFoot,
-          },
-        });
-        break;
+        break;node
 
       case userMessage.startsWith(".nhen"):
         let code = userMessage.split(" ").slice(1).join(" ").trim();
@@ -511,21 +499,40 @@ async function startBot() {
         }
         await nhenCommand(sock, chatId, code);
         break;
-      case userMessage.startsWith(".nsearch"):
-        const search = userMessage.split(" ").slice(1).join(" ").trim();
-        console.log(search);
-        await nhenSearch(sock, chatId, search);
-        break;
       case userMessage.startsWith(".yt") || userMessage.startsWith(".youtube"):
-        const urlRegex = /(https?:\/\/[^\s]+)/g;
-        const urls = userMessage.match(urlRegex);
+        const urls = "https://www.youtube.com/watch?v=pquWcqqd_b4";
         console.log(urls);
         await youtubeCommand(sock, chatId, urls);
         break;
       case userMessage.startsWith(".jomok") || userMessage.startsWith("!jomok"):
-        const query = "meme jomok";
+        query = "meme jomok";
         await getRandomImage(sock, chatId, query);
         console.log(query);
+        break;
+
+      case userMessage.startsWith(".google"):
+        query = userMessage.split(" ").slice(1).join(" ").trim();
+        await getRandomImage(sock, chatId, query);
+        console.log(query);
+        break;
+
+      case userMessage.startsWith(".femboy"):
+        query = "femboy";
+        await getRandomImage(sock, chatId, query);
+        console.log(query);
+        break;
+      case userMessage.startsWith(".footpic"):
+        query = "foot pictures";
+        await getRandomImage(sock, chatId, query);
+        console.log(query);
+        break;
+      case userMessage.startsWith(".goth"):
+        query = "goth girl";
+        await getRandomImage(sock, chatId, query);
+        console.log(query);
+        break;
+      case userMessage.startsWith(".hidden"):
+        await hiddenCommand(sock, chatId, channelLink);
         break;
 
       case userMessage.startsWith("!ping"):

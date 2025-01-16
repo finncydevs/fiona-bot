@@ -19,13 +19,12 @@ async function getRandomImage(sock, chatId, query) {
 
     if (images.length === 0) {
       await sock.sendMessage(chatId, {
-        text: "Maaf, tidak dapat menemukan gambar untuk kata kunci tersebut.",
+        text: "Sorry. Cant find for that queryy",
       });
       return;
     }
 
     const randomImage = images[Math.floor(Math.random() * images.length)];
-
     const imageResponse = await axios.get(randomImage, {
       responseType: "arraybuffer",
     });
@@ -38,7 +37,7 @@ async function getRandomImage(sock, chatId, query) {
       "nih buat kamu sayang",
       "ini meme jomoknya buat kamuch",
       "muachh",
-     ];
+    ];
 
     const randomGodaan = godaan[Math.floor(Math.random() * godaan.length)];
 
@@ -49,7 +48,7 @@ async function getRandomImage(sock, chatId, query) {
   } catch (error) {
     console.error("Error fetching image:", error);
     await sock.sendMessage(chatId, {
-      text: "Coba lagi nanti, terjadi kesalahan saat mengambil gambar.",
+      text: "Try again later.",
     });
   }
 }

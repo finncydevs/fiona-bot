@@ -36,6 +36,8 @@
     "tough-cookie": "^5.0.0",
     "ws": "^8.17.1",
     "yargs-parser": "^21.1.1",
+    "youtube-dl-exec": "^3.0.12",
+    "ytdl-core": "^4.11.5",
     "ytdlp-nodejs": "^0.1.5"
   }
 }

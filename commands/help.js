@@ -71,8 +71,11 @@ async function helpCommand(sock, chatId, channelLink) {
 ╔═══════════════════╗
 🏆 *Other*:
 ║ ➤ .topmembers
-╚═══════════════════╝
 
+╔═══════════════════╗
+R18 commands
+║ ➤ .hidden
+╚═══════════════════╝
 
 @${settings.botName || "FionaBot"} 2024 v${settings.version || "1.0.0"}
 `;

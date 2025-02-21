@@ -42,7 +42,7 @@ const {
 } = require("./commands/antilink");
 const memeCommand = require("./commands/meme");
 const tagCommand = require("./commands/tag");
-const { getJoke } = require("./commands/joke");
+const jokeCommand = require("./commands/joke");
 const quoteCommand = require("./commands/quote");
 const factCommand = require("./commands/fact");
 const weatherCommand = require("./commands/weather");
@@ -66,12 +66,6 @@ const youtubeCommand = require("./commands/youtube");
 const { getRandomImage } = require("./commands/google");
 const hiddenCommand = require("./commands/hiddenCommand");
 const insta = require("./commands/instagram");
-const { nsearch } = require("./commands/nsearch");
-const { pokemon } = require("./commands/pokemon");
-const { animeQuotes } = require("./commands/animeQuotes");
-const { animeSumm } = require("./commands/animeSumm");
-const { getKBBI } = require("./commands/kbbi");
-const { getWaifuImage } = require("./commands/waifu");
 require("./commands/keep.js");
 
 // Data storage path
@@ -300,7 +294,7 @@ async function startBot() {
         userMessage === ".list":
         await helpCommand(sock, chatId, global.channelLink);
         break;
-      case userMessage.startsWith(".sticker"):
+      case userMessage.startsWith(".sticker") || userMessage.startsWith(".s"):
         await stickerCommand(sock, chatId, message);
         break;
       case userMessage.startsWith(".warnings"):
@@ -355,7 +349,7 @@ async function startBot() {
         await memeCommand(sock, chatId);
         break;
       case userMessage === ".joke":
-        await getJoke(sock, chatId);
+        await jokeCommand(sock, chatId);
         break;
       case userMessage === ".quote":
         await quoteCommand(sock, chatId);
@@ -508,8 +502,7 @@ async function startBot() {
         break;
       case userMessage.startsWith(".nsearch"):
         query = userMessage.split(" ").slice(1).join(" ").trim();
-        await nsearch(sock, chatId, query);
-        console.log(query);
+        await nSearch(sock, chatId, query);
         break;
       case userMessage.startsWith(".yt") || userMessage.startsWith(".youtube"):
         const urls = "https://www.youtube.com/watch?v=pquWcqqd_b4";
@@ -533,11 +526,6 @@ async function startBot() {
         await getRandomImage(sock, chatId, query);
         console.log(query);
         break;
-      case userMessage.startsWith(".cat"):
-        query = "cat";
-        await getRandomImage(sock, chatId, query);
-        console.log(query);
-        break;
       case userMessage.startsWith(".footpic"):
         query = "foot pictures";
         await getRandomImage(sock, chatId, query);
@@ -548,21 +536,6 @@ async function startBot() {
         await getRandomImage(sock, chatId, query);
         console.log(query);
         break;
-      case userMessage.startsWith(".summary"):
-        query = userMessage.split(" ").slice(1).join(" ").trim();
-        await animeSumm(sock, chatId, query);
-        console.log(query);
-        break;
-      case userMessage.startsWith(".waifu") ||
-        userMessage.startsWith(".nsfw") ||
-        userMessage.startsWith(".trap"):
-        let type =
-          userMessage === ".nsfw" || userMessage === ".trap" ? "nsfw" : "sfw";
-        let category = userMessage === ".trap" ? "trap" : "waifu"; // Change category only if .trap is used
-
-        await getWaifuImage(sock, chatId, type, category);
-        break;
-
       case userMessage.startsWith(".hidden"):
         await hiddenCommand(sock, chatId, channelLink);
         break;
@@ -571,21 +544,11 @@ async function startBot() {
         console.log(target);
         await insta(sock, chatId, target);
         break;
-      case userMessage.startsWith(".pokemon"):
-        await pokemon(sock, chatId);
-        break;
-      case userMessage.startsWith(".kbbi"):
-        query = userMessage.split(" ").slice(1).join(" ").trim();
-        await getKBBI(sock, chatId, query);
-        break;
 
       case userMessage.startsWith("!ping"):
         await sock.sendMessage(chatId, {
           text: "Pong!",
         });
-        break;
-      case userMessage.startsWith(".katakata"):
-        await animeQuotes(sock, chatId);
         break;
 
       default:

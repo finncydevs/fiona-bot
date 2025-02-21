@@ -38,12 +38,17 @@ async function getRandomImage(sock, chatId, query) {
       "ini meme jomoknya buat kamuch",
       "muachh",
     ];
+    let caption;
 
-    const randomGodaan = godaan[Math.floor(Math.random() * godaan.length)];
+    if (query === "cat") {
+      caption = "nih kucingnya";
+    } else {
+      caption = godaan[Math.floor(Math.random() * godaan.length)];
+    }
 
     await sock.sendMessage(chatId, {
       image: buffer,
-      caption: randomGodaan,
+      caption: caption,
     });
   } catch (error) {
     console.error("Error fetching image:", error);

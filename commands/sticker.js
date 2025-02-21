@@ -1,5 +1,8 @@
 const { downloadMediaMessage } = require("@whiskeysockets/baileys");
 const sharp = require("sharp");
+const ffmpeg = require("fluent-ffmpeg");
+const fs = require("fs");
+const path = require("path");
 const settings = require("../settings");
 
 async function stickerCommand(sock, chatId, message) {
@@ -39,20 +42,62 @@ async function stickerCommand(sock, chatId, message) {
       throw new Error("Failed to download the media.");
     }
 
-    const stickerBuffer = await sharp(mediaBuffer)
-      .webp() // Convert to WebP format
-      .toBuffer();
+    // Cek apakah media adalah gambar atau video
+    if (mediaMessage.mimetype.startsWith("image/")) {
+      // Jika Gambar, gunakan Sharp
+      const stickerBuffer = await sharp(mediaBuffer).webp().toBuffer();
 
-    await sock.sendMessage(chatId, {
-      sticker: stickerBuffer,
-      mimetype: "image/webp",
-      packname: settings.packname || "My Pack", // Default values if settings are undefined
-      author: settings.author || "My Author",
-    });
+      await sock.sendMessage(chatId, {
+        sticker: stickerBuffer,
+        mimetype: "image/webp",
+        packname: settings.packname || "My Pack",
+        author: settings.author || "My Author",
+      });
+    } else if (mediaMessage.mimetype.startsWith("video/")) {
+      // Jika Video, gunakan FFmpeg
+      const tempInput = path.join(__dirname, "temp", `input_${Date.now()}.mp4`);
+      const tempOutput = path.join(
+        __dirname,
+        "temp",
+        `output_${Date.now()}.webp`
+      );
+
+      fs.writeFileSync(tempInput, mediaBuffer);
+
+      await new Promise((resolve, reject) => {
+        ffmpeg(tempInput)
+          .outputOptions([
+            "-vcodec libwebp", // Gunakan codec WebP
+            "-vf scale=512:512:force_original_aspect_ratio=decrease", // Resize ke ukuran maksimal 512x512
+            "-loop 0", // Looping animasi
+            "-preset default",
+            "-an", // Hapus audio
+            "-vsync 0",
+            "-s 512x512", // Ukuran output
+          ])
+          .toFormat("webp")
+          .save(tempOutput)
+          .on("end", resolve)
+          .on("error", reject);
+      });
+
+      const stickerBuffer = fs.readFileSync(tempOutput);
+
+      await sock.sendMessage(chatId, {
+        sticker: stickerBuffer,
+        mimetype: "image/webp",
+        packname: settings.packname || "My Pack",
+        author: settings.author || "My Author",
+      });
+
+      // Hapus file sementara setelah selesai
+      fs.unlinkSync(tempInput);
+      fs.unlinkSync(tempOutput);
+    }
   } catch (error) {
     console.error("Error creating sticker:", error.message);
     await sock.sendMessage(chatId, {
-      text: "Terjadi kesalahan saat membuat stiker: ${error.message}",
+      text: `Terjadi kesalahan saat membuat stiker: ${error.message}`,
     });
   }
 }

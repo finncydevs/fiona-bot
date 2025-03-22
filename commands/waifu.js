@@ -4,6 +4,7 @@ async function getWaifuImage(sock, chatId, type, category) {
   try {
     const url = `https://api.waifu.pics/${type}/${category}`;
     const response = await fetch(url);
+    console.log(response);
 
     if (!response.ok) {
       await sock.sendMessage(chatId, { text: "Couldn't fetch waifu image." });
@@ -11,6 +12,7 @@ async function getWaifuImage(sock, chatId, type, category) {
     }
 
     const data = await response.json();
+    console.log("Waifu image data:", data);
     const imageUrl = data.url;
 
     await sock.sendMessage(chatId, {

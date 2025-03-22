@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "index.js"
+    "dev": "nodemon --watch index.js"
   },
   "author": "",
   "license": "ISC",
@@ -14,6 +14,7 @@
     "@types/node": "^18.0.6",
     "@whiskeysockets/baileys": "^6.7.7",
     "axios": "^1.7.7",
+    "canvas": "^3.1.0",
     "chalk": "^4.1.2",
     "cheerio": "^1.0.0",
     "dotenv": "^16.4.7",
@@ -29,6 +30,7 @@
     "latest-version": "^9.0.0",
     "libsignal": "^2.0.1",
     "link-preview-js": "^3.0.5",
+    "nhentai-api": "^3.4.3",
     "nhentai-js": "^4.0.0",
     "phin": "^3.7.1",
     "qrcode": "^1.5.4",
@@ -42,5 +44,8 @@
     "youtube-dl-exec": "^3.0.12",
     "ytdl-core": "^4.11.5",
     "ytdlp-nodejs": "^0.1.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
   }
 }

@@ -16,37 +16,55 @@ const scheduleFileDeletion = (filePath) => {
     } catch (error) {
       console.error(`Failed to delete file:`, error);
     }
-  }, 10000); // 5 minutes
+  }, 5 * 60 * 1000); // 5 minutes
 };
 
 const convertStickerToImage = async (sock, quotedMessage, chatId) => {
   try {
-    const stickerMessage = quotedMessage.stickerMessage;
-    if (!stickerMessage) {
+    if (!quotedMessage || !quotedMessage.stickerMessage) {
       await sock.sendMessage(chatId, {
         text: "Reply to a sticker with .simage to convert it.",
       });
       return;
     }
 
-    const stickerFilePath = path.join(tempDir, `sticker_${Date.now()}.webp`);
+    const timestamp = Date.now();
+    const stickerFilePath = path.join(tempDir, `sticker_${timestamp}.webp`);
     const outputImagePath = path.join(
       tempDir,
-      `converted_image_${Date.now()}.png`
+      `converted_image_${timestamp}.png`
     );
 
-    const stream = await downloadContentFromMessage(stickerMessage, "sticker");
-    let buffer = Buffer.from([]);
-    for await (const chunk of stream) buffer = Buffer.concat([buffer, chunk]);
+    console.log("Downloading sticker...");
+    const stream = await downloadContentFromMessage(
+      quotedMessage.stickerMessage,
+      "sticker"
+    );
+    const chunks = [];
+    for await (const chunk of stream) chunks.push(chunk);
+    const buffer = Buffer.concat(chunks);
 
+    if (!buffer.length) {
+      throw new Error("Failed to download sticker.");
+    }
+
+    console.log("Sticker downloaded. Saving to file...");
     await fsPromises.writeFile(stickerFilePath, buffer);
-    await sharp(stickerFilePath).toFormat("png").toFile(outputImagePath);
+    console.log("Sticker saved at:", stickerFilePath);
+
+    console.log("Converting sticker to PNG...");
+    await sharp(stickerFilePath)
+      .ensureAlpha() // Pastikan transparansi ada jika perlu
+      .toFormat("png")
+      .toFile(outputImagePath);
+    console.log("Conversion complete. Image saved at:", outputImagePath);
 
     const imageBuffer = await fsPromises.readFile(outputImagePath);
     await sock.sendMessage(chatId, {
       image: imageBuffer,
       caption: "Here is the converted image!",
     });
+    console.log("Image sent successfully!");
 
     scheduleFileDeletion(stickerFilePath);
     scheduleFileDeletion(outputImagePath);

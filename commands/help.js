@@ -42,6 +42,9 @@ async function helpCommand(sock, chatId, channelLink) {
 ║ ➤ .warn @user
 ║ ➤ .antilink
 ║ ➤ .clear
+║ ➤ .pokemon // gacha pokemon
+║ ➤ .kbbi <kata>
+║ ➤ .summary <anime>
 ╚═══════════════════╝
 
 ╔═══════════════════╗

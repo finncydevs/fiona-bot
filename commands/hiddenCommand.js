@@ -17,6 +17,13 @@ async function hiddenCommand(sock, chatId, channelLink) {
 ║ ➤ .jomok
 ║ ➤ .nhen //Masukan kode atau gacha kode
 ║ ➤ .footpic
+║ ➤ .freefuck
+║ ➤ .femboy //Kirim random femboy
+║ ➤ .goth //Kirim random goth
+║ ➤ .waifu //Kirim random waifu
+║ ➤ .trap //Kirim random trap
+║ ➤ .nsfw //Kirim random NSFW
+
 ╚═══════════════════╝
 
 @${settings.botName || "FionaBot"} 2024 v${settings.version || "1.0.0"}

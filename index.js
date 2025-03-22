@@ -72,7 +72,11 @@ const { animeQuotes } = require("./commands/animeQuotes");
 const { animeSumm } = require("./commands/animeSumm");
 const { getKBBI } = require("./commands/kbbi");
 const { getWaifuImage } = require("./commands/waifu");
+const { curhatAi } = require("./commands/curhat");
+const { bratGen } = require("./commands/brat");
+const { funfactsCommand } = require("./commands/funfact");
 require("./commands/keep.js");
+// const { smemeCommand } = require("./commands/smeme");
 
 // Data storage path
 const dataDirectory = path.join(__dirname, "./data");
@@ -438,27 +442,9 @@ async function startBot() {
         await complimentCommand(sock, chatId, mentionedComplimentUser);
         break;
       case userMessage.startsWith(".insult"):
-        try {
-          const mentionedInsultUser =
-            message.message.extendedTextMessage?.contextInfo?.mentionedJid?.[0];
-
-          if ((mentionedInsultUser = isAdmin)) {
-            await sock.sendMessage(chatId, {
-              text: "Sorry, you can’t insult an admin.",
-            });
-          } else if (!mentionedInsultUser) {
-            await sock.sendMessage(chatId, {
-              text: "Please mention a user to insult.",
-            });
-          } else {
-            await insultCommand(sock, chatId, mentionedInsultUser);
-          }
-        } catch (error) {
-          console.error("Error handling .insult command:", error);
-          await sock.sendMessage(chatId, {
-            text: "An error occurred while processing the insult command.",
-          });
-        }
+        const mentionedUser =
+          message.message.extendedTextMessage?.contextInfo?.mentionedJid[0];
+       await insultCommand(sock, chatId, mentionedUser)
         break;
       case userMessage.startsWith(".8ball"):
         const question = userMessage.split(" ").slice(1).join(" ");
@@ -555,11 +541,21 @@ async function startBot() {
         break;
       case userMessage.startsWith(".waifu") ||
         userMessage.startsWith(".nsfw") ||
-        userMessage.startsWith(".trap"):
+        userMessage.startsWith(".trap") ||
+        userMessage.startsWith(".neko"):
         let type =
-          userMessage === ".nsfw" || userMessage === ".trap" ? "nsfw" : "sfw";
-        let category = userMessage === ".trap" ? "trap" : "waifu"; // Change category only if .trap is used
-
+          userMessage === ".nsfw" ||
+          userMessage === ".trap" ||
+          userMessage === ".neko"
+            ? "nsfw"
+            : "sfw";
+        let category =
+          userMessage === ".trap"
+            ? "trap"
+            : userMessage === ".neko"
+            ? "neko"
+            : "waifu";
+        console.log(type, category);
         await getWaifuImage(sock, chatId, type, category);
         break;
 
@@ -578,6 +574,13 @@ async function startBot() {
         query = userMessage.split(" ").slice(1).join(" ").trim();
         await getKBBI(sock, chatId, query);
         break;
+      case userMessage.startsWith(".funfact"):
+        await funfactsCommand(sock, chatId);
+        break;
+      // case userMessage.startsWith(".smeme"):
+      //   query = userMessage.split(" ").slice(7).trim();
+      //   await smemeCommand(sock, chatId, message, query);
+      //   break;
 
       case userMessage.startsWith("!ping"):
         await sock.sendMessage(chatId, {
@@ -586,6 +589,15 @@ async function startBot() {
         break;
       case userMessage.startsWith(".katakata"):
         await animeQuotes(sock, chatId);
+        break;
+      case userMessage.startsWith(".curhat"):
+        query = userMessage.split(" ").slice(1).join(" ").trim();
+        await curhatAi(sock, chatId, query);
+        break;
+      case userMessage.startsWith(".brat"):
+        query = userMessage.split(" ").slice(1).join(" ").trim();
+        console.log(query);
+        await bratGen(sock, chatId, query);
         break;
 
       default:
